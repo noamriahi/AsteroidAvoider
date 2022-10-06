@@ -6,10 +6,18 @@ using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] float forceMagnitude;
+    [SerializeField] float maxVelocity;
+
+    private Rigidbody rb;
     private Camera mainCamera;
+
+    private Vector3 movementDirection;
+    
     void Start()
     {
         mainCamera = Camera.main;
+        rb = GetComponent<Rigidbody>();
     }
     void OnEnable()
     {
@@ -23,15 +31,24 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if(!Touchscreen.current.primaryTouch.press.isPressed)
+        if(Touchscreen.current.primaryTouch.press.isPressed)
         {
-            return;
-        }
         Vector2 touchPosition = Touchscreen.current.primaryTouch.position.ReadValue();
 
-        Debug.Log(touchPosition);
-
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(touchPosition);
-        Debug.Log(worldPosition);
+
+        movementDirection = transform.position - worldPosition;
+        movementDirection.z = 0;
+        movementDirection.Normalize();
+        }
+        else
+        {
+            movementDirection = Vector3.zero;
+        }
+    }
+    private void FixedUpdate()
+    {
+        if(movementDirection == Vector3.zero) { return; }
+        rb.AddForce(movementDirection * forceMagnitude, ForceMode.Force);
     }
 }
