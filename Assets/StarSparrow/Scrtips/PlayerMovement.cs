@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,13 @@ public class PlayerMovement : MonoBehaviour
         ProcessInput();
 
         KeepPlayerOnScreen();
+
+        RotateToFaceVelocity();
+    }
+
+    private void RotateToFaceVelocity()
+    {
+        transform.rotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
     }
 
     void FixedUpdate()
