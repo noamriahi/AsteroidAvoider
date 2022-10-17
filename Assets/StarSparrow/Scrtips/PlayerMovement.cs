@@ -1,14 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float forceMagnitude;
     [SerializeField] private float maxVelocity;
+    [SerializeField] private float rotationSpeed;
 
     private Rigidbody rb;
     private Camera mainCamera;
@@ -25,15 +24,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         ProcessInput();
-
         KeepPlayerOnScreen();
-
         RotateToFaceVelocity();
-    }
-
-    private void RotateToFaceVelocity()
-    {
-        transform.rotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
     }
 
     void FixedUpdate()
@@ -88,4 +80,19 @@ public class PlayerMovement : MonoBehaviour
 
         transform.position = newPosition;
     }
+    private void RotateToFaceVelocity()
+    {
+        if(rb.velocity == Vector3.zero)
+        {
+            return;
+        }
+        Quaternion targetRotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
+
+        transform.rotation = Quaternion.Lerp(
+            transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
 }
+
+
+
+
